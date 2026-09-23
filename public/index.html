@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hashira Hub - ITA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,600;1,700&family=Outfit:wght@300;400;600&display=swap">
+<style>
+:root{--bg:#070b1f;--ink:#f4f5ff;--mute:#a9acd9;--gold:#f7cf5a;--amber:#f0a640;--line:#ffffff1f;--card:#0d1330cc}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:radial-gradient(ellipse at 75% 20%,#14245a 0,var(--bg) 55%);background-attachment:fixed;color:var(--ink);font:400 18px/1.55 Outfit,system-ui,sans-serif;min-height:100vh}
+#sky{position:fixed;inset:0;z-index:-1;width:100%;height:100%}
+h1,h2,h3,.brand{font-family:'Chakra Petch',sans-serif}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+header{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:14px 24px;background:#070b1fcc;backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.brand{font-size:22px;font-weight:600;color:var(--gold)}
+nav{display:flex;gap:6px}
+nav a{padding:8px 16px;border-radius:12px;color:var(--mute)}
+nav a.on,nav a:hover{color:var(--ink);background:#ffffff14}
+#burger{display:none;background:none;border:1px solid var(--line);border-radius:14px;width:52px;height:52px;cursor:pointer}
+#burger span,#burger::before,#burger::after{content:"";display:block;width:24px;height:2px;background:var(--ink);margin:5px auto}
+main{max-width:1100px;margin:0 auto;padding:0 24px 80px}
+.page{display:none}.page.on{display:block}
+.hero{padding:80px 0 40px}
+.hero h1{font-size:clamp(56px,15vw,170px);line-height:.95;font-style:italic;font-weight:700;background:linear-gradient(90deg,#fff1b8,var(--gold) 70%);-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:-.02em}
+.sub{display:flex;align-items:center;gap:16px;margin:18px 0 32px;font:600 clamp(20px,4vw,34px) 'Chakra Petch';letter-spacing:.4em}
+.flag{width:86px;height:5px;border-radius:3px;background:linear-gradient(90deg,#009246 33%,#fff 33% 66%,#ce2b37 66%)}
+.lead{color:var(--mute);font-size:clamp(19px,2.6vw,26px);max-width:34ch}
+.btns{display:flex;flex-wrap:wrap;gap:14px;margin:34px 0}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:16px 28px;border-radius:18px;font:600 20px 'Chakra Petch';border:1px solid var(--line);background:#0d1330}
+.btn.gold{color:#1a1204;border:0;background:linear-gradient(#f9d861,var(--amber));box-shadow:0 8px 30px #f0a64040}
+.stats{display:flex;flex-wrap:wrap;gap:12px 40px;align-items:baseline}
+.stats b{font:600 32px 'Chakra Petch'}.stats span{color:var(--mute)}
+.dot{width:12px;height:12px;border-radius:50%;background:#3ddc84;align-self:center;box-shadow:0 0 10px #3ddc84}
+.dot.off{background:#ff6b6b;box-shadow:0 0 10px #ff6b6b}
+#fresh{color:#8d90be;font-size:15px;margin-top:10px}
+h2{font-size:clamp(32px,5vw,52px);margin:72px 0 10px}
+h2+p{color:var(--mute);margin-bottom:28px}
+.cats{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px}
+.cat{padding:26px;border:1px solid var(--line);border-radius:22px;background:var(--card)}
+.cat i{font-style:normal;font-size:38px}.cat h3{font-size:24px;margin:10px 0 6px}.cat p{color:var(--mute);font-size:16px}
+.games{display:flex;gap:18px;overflow-x:auto;padding-bottom:14px;scroll-snap-type:x mandatory}
+.game{flex:0 0 250px;height:340px;border-radius:28px;padding:24px;display:flex;flex-direction:column;justify-content:flex-end;scroll-snap-align:start;background:linear-gradient(180deg,var(--a),var(--b))}
+.game i{font-style:normal;font-size:84px;margin:auto auto 0;filter:drop-shadow(0 10px 14px #0006)}
+.game h3{font-size:26px;margin-top:22px}
+.cta{text-align:center;margin-top:90px}
+.cta h2{margin-top:0}.cta p{margin:0 0 26px;color:var(--mute)}
+.group{margin:34px 0}.group h3{font-size:26px;margin-bottom:14px}.group h3 small{color:var(--mute);font:400 16px Outfit}
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:5px 14px 5px 5px;border-radius:99px;background:#5865f233;color:#c9cdfb;font-weight:600}
+.chip img{width:28px;height:28px;border-radius:50%}
+.empty{color:var(--mute)}
+.feed{display:grid;gap:16px;max-width:760px}
+.post{padding:22px;border:1px solid var(--line);border-radius:22px;background:var(--card)}
+.who{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.who img{width:44px;height:44px;border-radius:50%}
+.who b{display:block;font:600 19px 'Chakra Petch'}.who time{color:var(--mute);font-size:15px}
+.post p{white-space:pre-wrap;overflow-wrap:anywhere}
+.post img.pic{max-width:100%;border-radius:14px;margin-top:14px}
+a.cat{display:block}
+.info{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:24px}
+.info div{padding:22px;border:1px solid var(--line);border-radius:20px;background:var(--card)}
+.info b{display:block;font:600 30px 'Chakra Petch'}.info span{color:var(--mute);font-size:16px}
+.cmds{list-style:none;padding:0;display:grid;gap:10px}
+.cmds li{padding:14px 18px;border:1px solid var(--line);border-radius:16px;background:var(--card)}
+.cmds code{color:var(--gold);font-weight:600;margin-right:10px}
+footer{text-align:center;color:#8d90be;padding:30px;font-size:15px}
+@media(max-width:760px){
+ #burger{display:block}
+ nav{display:none;position:absolute;top:100%;left:0;right:0;flex-direction:column;padding:12px 24px;background:#070b1ff2;border-bottom:1px solid var(--line)}
+ nav.open{display:flex}
+ .sub{letter-spacing:.25em}
+}
+</style>
+</head>
+<body>
+<canvas id="sky" aria-hidden="true"></canvas>
+<header>
+  <a class="brand" href="#home">Hashira Hub - ITA</a>
+  <button id="burger" aria-label="Menu"><span></span></button>
+  <nav id="nav">
+    <a href="#home">Home</a><a href="#annunci">Annunci</a><a href="#staff">Staff</a><a href="#info">Info</a>
+  </nav>
+</header>
+
+<main>
+<section class="page" id="home">
+  <div class="hero">
+    <h1>HASHIRA HUB</h1>
+    <div class="sub"><span class="flag"></span>ITA</div>
+    <p class="lead">Una community italiana con staff sempre presente, e eventi continui!</p>
+    <div class="btns">
+      <a class="btn gold" href="https://discord.gg/wYxbM4dxW" target="_blank" rel="noopener">Entra nel server</a>
+      <a class="btn" href="#info">Scopri il server</a>
+    </div>
+    <div class="stats">
+      <span class="dot" id="dot"></span><span><b data-k="online">–</b> online adesso</span>
+      <span><b data-k="offline">–</b> offline</span>
+      <span><b data-k="total">–</b> membri totali</span>
+    </div>
+    <p id="fresh">Connessione in corso…</p>
+  </div>
+
+  <h2>Cosa trovi nel server</h2>
+  <p>Cinque aree, ognuna con i suoi canali.</p>
+  <div class="cats">
+    <a class="cat" href="#annunci"><i>📣</i><h3>Annunci</h3><p>Le novità del server, pubblicate qui appena escono su Discord.</p></a>
+    <div class="cat"><i>🎁</i><h3>Giveaway</h3><p>Premi, code e sorteggi organizzati dallo staff per tutta la community.</p></div>
+    <div class="cat"><i>🎌</i><h3>Anime</h3><p>Consigli, discussioni e serate a parlare degli anime che ami.</p></div>
+    <div class="cat"><i>🎮</i><h3>Giochi</h3><p>Canali dedicati a ogni gioco per trovare compagni di squadra.</p></div>
+    <div class="cat"><i>📌</i><h3>Informazioni generali</h3><p>Regole, annunci e novità del server sempre a portata di mano.</p></div>
+  </div>
+
+  <h2 style="margin-bottom:26px">I nostri giochi</h2>
+  <div class="games">
+    <div class="game" style="--a:#e2231a;--b:#2b1230"><i>🧱</i><h3>Roblox</h3></div>
+    <div class="game" style="--a:#f5a623;--b:#5a2a8a"><i>⭐</i><h3>Brawl Stars</h3></div>
+    <div class="game" style="--a:#1fa855;--b:#0c2a4a"><i>⚽</i><h3>FIFA</h3></div>
+    <div class="game" style="--a:#6bbf3b;--b:#4a3220"><i>⛏️</i><h3>Minecraft</h3></div>
+    <div class="game" style="--a:#e6b422;--b:#2f5a2a"><i>🌾</i><h3>Hay Day</h3></div>
+    <div class="game" style="--a:#3a7bd5;--b:#6a1b9a"><i>⚔️</i><h3>Clash Royale</h3></div>
+    <div class="game" style="--a:#8e44ff;--b:#0d3b7a"><i>🪂</i><h3>Fortnite</h3></div>
+  </div>
+
+  <div class="cta">
+    <h2>Entra a far parte della community</h2>
+    <p>Una community, una famiglia.</p>
+    <a class="btn gold" href="https://discord.gg/wYxbM4dxW" target="_blank" rel="noopener">Entra nel server</a>
+  </div>
+</section>
+
+<section class="page" id="annunci">
+  <h2 style="margin-top:56px">Annunci</h2>
+  <p>I messaggi del canale annunci, in tempo reale.</p>
+  <div class="feed" id="feed"><p class="empty">Caricamento…</p></div>
+</section>
+
+<section class="page" id="staff">
+  <h2 style="margin-top:56px">Il nostro staff</h2>
+  <p>Chi si prende cura del server, aggiornato in tempo reale.</p>
+  <div id="staffList"><p class="empty">Caricamento…</p></div>
+</section>
+
+<section class="page" id="info">
+  <h2 style="margin-top:56px">Info del server</h2>
+  <p>Numeri dal vivo di Hashira Hub - ITA.</p>
+  <div class="info">
+    <div><b data-k="total">–</b><span>membri totali</span></div>
+    <div><b data-k="online">–</b><span>online</span></div>
+    <div><b data-k="offline">–</b><span>offline</span></div>
+    <div><b data-k="staffCount">–</b><span>persone nello staff</span></div>
+    <div><b data-k="textChannels">–</b><span>canali testuali</span></div>
+    <div><b data-k="voiceChannels">–</b><span>canali vocali</span></div>
+    <div><b data-k="roles">–</b><span>ruoli</span></div>
+    <div><b data-k="boosts">–</b><span>boost</span></div>
+    <div><b data-k="created">–</b><span>server creato il</span></div>
+  </div>
+  <h2>Comandi del bot</h2>
+  <p>Lista aggiornata automaticamente quando cambia il bot. Latenza: <b data-k="ping">–</b> ms.</p>
+  <ul class="cmds" id="cmds"><li class="empty">Nessun comando trovato.</li></ul>
+</section>
+</main>
+<footer>Hashira Hub - ITA · Una community, una famiglia</footer>
+
+<script>
+/* ---------- Sfondo: stelle e comete ---------- */
+const cv = document.getElementById('sky'), cx = cv.getContext('2d');
+const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let W, H, stars = [], comets = [];
+function resize() {
+  W = cv.width = innerWidth; H = cv.height = innerHeight;
+  stars = Array.from({ length: Math.round(W * H / 6500) }, () => ({ x: Math.random() * W, y: Math.random() * H, r: Math.random() * 1.3 + .2, p: Math.random() * 6 }));
+}
+function spawn() {
+  const a = Math.PI * (.6 + Math.random() * .08), s = 6 + Math.random() * 6;
+  comets.push({ x: Math.random() * W * 1.3, y: -30, vx: Math.cos(a) * s, vy: Math.sin(a) * s, len: 90 + Math.random() * 110 });
+}
+function draw(t) {
+  cx.clearRect(0, 0, W, H);
+  for (const s of stars) {
+    cx.globalAlpha = still ? .7 : .35 + .65 * Math.abs(Math.sin(t / 1400 + s.p));
+    cx.fillStyle = '#fff'; cx.beginPath(); cx.arc(s.x, s.y, s.r, 0, 7); cx.fill();
+  }
+  cx.globalAlpha = 1;
+  if (!still) {
+    if (Math.random() < .014) spawn();
+    comets = comets.filter(c => c.y < H + 150 && c.x > -250);
+    for (const c of comets) {
+      c.x += c.vx; c.y += c.vy;
+      const m = Math.hypot(c.vx, c.vy), tx = c.x - c.vx / m * c.len, ty = c.y - c.vy / m * c.len;
+      const g = cx.createLinearGradient(c.x, c.y, tx, ty);
+      g.addColorStop(0, '#fff'); g.addColorStop(.3, '#9fc0ff88'); g.addColorStop(1, '#9fc0ff00');
+      cx.strokeStyle = g; cx.lineWidth = 2.2; cx.lineCap = 'round';
+      cx.beginPath(); cx.moveTo(c.x, c.y); cx.lineTo(tx, ty); cx.stroke();
+      cx.fillStyle = '#fff'; cx.shadowColor = '#9fc0ff'; cx.shadowBlur = 14;
+      cx.beginPath(); cx.arc(c.x, c.y, 2.4, 0, 7); cx.fill(); cx.shadowBlur = 0;
+    }
+    requestAnimationFrame(draw);
+  }
+}
+addEventListener('resize', () => { resize(); if (still) draw(0); });
+resize(); requestAnimationFrame(draw);
+
+/* ---------- Pagine ---------- */
+const pages = ['home', 'annunci', 'staff', 'info'];
+function route() {
+  const p = pages.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'home';
+  document.querySelectorAll('.page').forEach(e => e.classList.toggle('on', e.id === p));
+  document.querySelectorAll('nav a').forEach(a => a.classList.toggle('on', a.hash === '#' + p));
+  document.getElementById('nav').classList.remove('open');
+  scrollTo(0, 0);
+}
+addEventListener('hashchange', route); route();
+document.getElementById('burger').onclick = () => document.getElementById('nav').classList.toggle('open');
+
+/* ---------- Dati in tempo reale ---------- */
+let last = 0;
+const set = (k, v) => document.querySelectorAll(`[data-k="${k}"]`).forEach(e => e.textContent = v);
+function apply(s) {
+  if (!s.ready) return;
+  last = s.updatedAt || Date.now();
+  document.getElementById('dot').classList.remove('off');
+  const staffCount = s.staff.reduce((n, g) => n + g.members.length, 0);
+  Object.entries({ online: s.online, offline: s.offline, total: s.total, staffCount, ping: s.bot.ping,
+    textChannels: s.server.textChannels, voiceChannels: s.server.voiceChannels, roles: s.server.roles, boosts: s.server.boosts,
+    created: new Date(s.server.createdAt).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' }) })
+    .forEach(([k, v]) => set(k, v));
+
+  const list = document.getElementById('staffList'); list.replaceChildren();
+  for (const g of s.staff) {
+    const box = document.createElement('div'); box.className = 'group';
+    const h = document.createElement('h3'); h.textContent = g.label + ' ';
+    const n = document.createElement('small'); n.textContent = '(' + g.members.length + ')'; h.append(n);
+    const chips = document.createElement('div'); chips.className = 'chips';
+    if (!g.members.length) { chips.innerHTML = '<span class="empty">Nessuno per ora.</span>'; }
+    for (const m of g.members) {
+      const c = document.createElement('span'); c.className = 'chip';
+      const i = document.createElement('img'); i.src = m.avatar; i.alt = '';
+      c.append(i, '@' + m.name); chips.append(c);
+    }
+    box.append(h, chips); list.append(box);
+  }
+  const feed = document.getElementById('feed'); feed.replaceChildren();
+  if (!(s.announcements || []).length) feed.innerHTML = '<p class="empty">Nessun annuncio per ora.</p>';
+  for (const a of s.announcements || []) {
+    const post = document.createElement('article'); post.className = 'post';
+    const who = document.createElement('div'); who.className = 'who';
+    const av = document.createElement('img'); av.src = a.avatar; av.alt = '';
+    const meta = document.createElement('div');
+    const name = document.createElement('b'); name.textContent = a.author;
+    const time = document.createElement('time');
+    time.textContent = new Date(a.timestamp).toLocaleString('it-IT', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    meta.append(name, time); who.append(av, meta); post.append(who);
+    if (a.content) { const p = document.createElement('p'); p.textContent = a.content; post.append(p); }
+    if (a.image) { const im = document.createElement('img'); im.className = 'pic'; im.src = a.image; im.alt = ''; post.append(im); }
+    feed.append(post);
+  }
+  const cmds = document.getElementById('cmds'); cmds.replaceChildren();
+  if (!s.bot.commands.length) cmds.innerHTML = '<li class="empty">Nessun comando trovato.</li>';
+  for (const c of s.bot.commands) {
+    const li = document.createElement('li'), code = document.createElement('code');
+    code.textContent = '/' + c.name; li.append(code, c.description); cmds.append(li);
+  }
+}
+setInterval(() => {
+  if (!last) return;
+  const sec = Math.max(0, Math.round((Date.now() - last) / 1000));
+  document.getElementById('fresh').textContent = 'Dati dal vivo, aggiornati ' + sec + ' secondi fa';
+}, 1000);
+
+const es = new EventSource('/events');
+es.onmessage = e => apply(JSON.parse(e.data));
+es.onerror = () => {
+  document.getElementById('dot').classList.add('off');
+  document.getElementById('fresh').textContent = 'Connessione persa, riprovo…';
+};
+</script>
+</body>
+</html>
