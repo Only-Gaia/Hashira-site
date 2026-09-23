@@ -1,0 +1,14 @@
+{
+  "name": "hashira-hub-ita",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "node --env-file=.env server.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.22.0",
+    "express": "^4.21.0"
+  },
+  "engines": { "node": ">=20.6" }
+}
