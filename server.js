@@ -1,7 +1,6 @@
 import express from 'express';
 import { Client, GatewayIntentBits, Events, ChannelType } from 'discord.js';
 
-// Ruoli staff, dal più basso al più alto (l'ordine è quello in cui li hai scritti)
 const ROLES = [
   { id: '1551990283384660108', label: 'Trial staff' },
   { id: '1551989231738683433', label: 'Staff' },
@@ -10,12 +9,14 @@ const ROLES = [
 
 const client = new Client({
   intents: [
-    GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildPresences,
-    GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent,
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildPresences,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
   ],
 });
 
-// Canale da cui arrivano gli annunci
 const ANNOUNCE_CHANNEL_ID = '1551963576842068038';
 const listeners = new Set();
 let guild;
@@ -29,13 +30,21 @@ function snapshot() {
   const staff = ROLES.map((r) => ({ label: r.label, members: [] }));
 
   for (const m of humans.values()) {
-    // Se una persona ha più ruoli staff, compare solo in quello più alto
     let best = -1;
     ROLES.forEach((r, i) => {
-      if (m.roles.cache.has(r.id) && (best < 0 || guild.roles.cache.get(r.id).position > guild.roles.cache.get(ROLES[best].id).position)) best = i;
+      if (m.roles.cache.has(r.id) && (best < 0 || guild.roles.cache.get(r.id).position > guild.roles.cache.get(ROLES[best].id).position)) {
+        best = i;
+      }
     });
-    if (best >= 0) staff[best].members.push({ id: m.id, name: m.displayName, avatar: m.displayAvatarURL({ extension: 'png', size: 64 }) });
+    if (best >= 0) {
+      staff[best].members.push({
+        id: m.id,
+        name: m.displayName,
+        avatar: m.displayAvatarURL({ extension: 'png', size: 64 }),
+      });
+    }
   }
+
   staff.forEach((g) => g.members.sort((a, b) => a.name.localeCompare(b.name)));
 
   const ch = guild.channels.cache;
@@ -46,7 +55,7 @@ function snapshot() {
     total: humans.size,
     online,
     offline: humans.size - online,
-    staff: staff.reverse(), // mostra prima Staffer, poi Staff, poi Trial staff
+    staff: staff.reverse(),
     server: {
       name: guild.name,
       icon: guild.iconURL({ size: 128 }),
@@ -56,7 +65,12 @@ function snapshot() {
       textChannels: ch.filter((c) => c.type === ChannelType.GuildText || c.type === ChannelType.GuildAnnouncement).size,
       voiceChannels: ch.filter((c) => c.type === ChannelType.GuildVoice || c.type === ChannelType.GuildStageVoice).size,
     },
-    bot: { name: client.user.username, avatar: client.user.displayAvatarURL({ size: 64 }), ping: client.ws.ping, commands },
+    bot: {
+      name: client.user.username,
+      avatar: client.user.displayAvatarURL({ size: 64 }),
+      ping: client.ws.ping,
+      commands,
+    },
   };
 }
 
@@ -65,7 +79,13 @@ function push() {
   clearTimeout(timer);
   timer = setTimeout(() => {
     const data = `data: ${JSON.stringify(snapshot())}\n\n`;
-    for (const res of listeners) res.write(data);
+    for (const res of listeners) {
+      try {
+        res.write(data);
+      } catch (e) {
+        console.error('Errore writing to response:', e.message);
+      }
+    }
   }, 800);
 }
 
@@ -73,7 +93,9 @@ async function refreshCommands() {
   try {
     const list = await client.application.commands.fetch();
     commands = [...list.values()].map((c) => ({ name: c.name, description: c.description }));
-  } catch {}
+  } catch (e) {
+    console.error('Errore nel refresh comandi:', e.message);
+  }
 }
 
 async function refreshAnnouncements() {
@@ -95,38 +117,88 @@ async function refreshAnnouncements() {
   }
 }
 
-// Ogni messaggio nuovo, modificato o eliminato nel canale annunci aggiorna il sito
-const refreshAndPush = async () => { await refreshAnnouncements(); push(); };
+const refreshAndPush = async () => {
+  await refreshAnnouncements();
+  push();
+};
+
 for (const e of [Events.MessageCreate, Events.MessageUpdate, Events.MessageDelete]) {
   client.on(e, (m) => m.channelId === ANNOUNCE_CHANNEL_ID && refreshAndPush());
 }
 client.on(Events.MessageBulkDelete, (_msgs, ch) => ch.id === ANNOUNCE_CHANNEL_ID && refreshAndPush());
 
 client.once(Events.ClientReady, async () => {
-  guild = client.guilds.cache.get(process.env.GUILD_ID) ?? client.guilds.cache.first();
-  await guild.members.fetch();
-  await refreshCommands();
-  await refreshAnnouncements();
-  push();
-  setInterval(async () => { await refreshCommands(); push(); }, 60_000);
-  console.log(`Bot online come ${client.user.tag} su "${guild.name}"`);
+  try {
+    guild = client.guilds.cache.get(process.env.GUILD_ID) ?? client.guilds.cache.first();
+    if (!guild) {
+      console.error('Guild non trovato!');
+      return;
+    }
+    await guild.members.fetch();
+    await refreshCommands();
+    await refreshAnnouncements();
+    push();
+    setInterval(async () => {
+      try {
+        await refreshCommands();
+        push();
+      } catch (e) {
+        console.error('Errore nel refresh periodico:', e.message);
+      }
+    }, 60000);
+    console.log(`Bot online come ${client.user.tag} su "${guild.name}"`);
+  } catch (e) {
+    console.error('Errore nell\'inizializzazione:', e.message);
+  }
 });
 
 [
-  Events.GuildMemberAdd, Events.GuildMemberRemove, Events.GuildMemberUpdate, Events.PresenceUpdate,
-  Events.GuildRoleCreate, Events.GuildRoleDelete, Events.GuildRoleUpdate, Events.GuildUpdate,
-  Events.ChannelCreate, Events.ChannelDelete,
+  Events.GuildMemberAdd,
+  Events.GuildMemberRemove,
+  Events.GuildMemberUpdate,
+  Events.PresenceUpdate,
+  Events.GuildRoleCreate,
+  Events.GuildRoleDelete,
+  Events.GuildRoleUpdate,
+  Events.GuildUpdate,
+  Events.ChannelCreate,
+  Events.ChannelDelete,
 ].forEach((e) => client.on(e, push));
+
+client.on('error', (error) => {
+  console.error('Discord client error:', error.message);
+});
+
+client.on('warn', (warning) => {
+  console.warn('Discord warning:', warning);
+});
+
+process.on('unhandledRejection', (reason) => {
+  console.error('Unhandled rejection:', reason);
+});
+
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught exception:', error.message);
+});
 
 const app = express();
 app.use(express.static('public'));
+
 app.get('/api/state', (_req, res) => res.json(snapshot()));
+
 app.get('/events', (req, res) => {
-  res.set({ 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', Connection: 'keep-alive' });
+  res.set({
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    Connection: 'keep-alive',
+  });
   res.write(`data: ${JSON.stringify(snapshot())}\n\n`);
   listeners.add(res);
-  const beat = setInterval(() => res.write(': ping\n\n'), 25_000);
-  req.on('close', () => { clearInterval(beat); listeners.delete(res); });
+  const beat = setInterval(() => res.write(': ping\n\n'), 25000);
+  req.on('close', () => {
+    clearInterval(beat);
+    listeners.delete(res);
+  });
 });
 
 client.login(process.env.DISCORD_TOKEN);
